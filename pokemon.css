@@ -1,0 +1,245 @@
+body {
+    background-image: url(imgs/fondoGeneral.jpg);
+    background-size: cover;
+    font-family: comic sans ms;
+}
+img {
+    width: 100%;
+    height: 100%;
+}
+#juego {
+    display:flex;
+}
+#tablero {
+    position: absolute;
+    
+    left: 16%;
+    width: 67.5%;
+    height: 770px;
+    border: 2px solid silver; 
+    background-image: url(imgs/fondoBatalla.jpg);
+    background-size: cover;
+    overflow: hidden;
+}
+
+/**************************************************** Sprites *****************************************************/
+
+#jugadaMachine {
+    position: absolute;
+    top: 22%;
+    left: 64%;
+    width: 25%;
+    height: 300px;
+    
+}
+#jugadaMachine img {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    animation: bounce 0.6s infinite alternate;
+}
+
+#jugadaPlayer {
+    position: absolute;
+    top: 45%;
+    left: -5%;
+    width: 60%;
+    height: 700px;
+   
+}
+#jugadaPlayer img {
+    width: 100%;
+    height: 100%;
+    animation: bounce 1s infinite alternate;
+}
+
+.golpe {
+    animation: bounce 0.6s infinite alternate, blink 0.5s infinite;
+}
+.ataque {
+    animation: bounce 1s infinite alternate, diagonalMove 0.5s 0.5s;
+}
+@keyframes diagonalMove {
+    0% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(100px, -100px);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(10px);
+    }
+}
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+/****************************************** Equipo Pokémon ******************************************/
+
+#tableroPlayer { 
+    margin-top: 30px;
+    width: 15%;  
+    height: 840px;
+    padding-top: 5px;
+    background-color:wheat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    opacity: 0.9;
+}
+#pokeball1, #pokeball2, #pokeball3, #pokeball4, #pokeball5 {
+    width: 60%;
+    height: 165px;      
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+#tableroMachine {   
+    margin-top: 30px;  
+    padding-top: 5px;  
+    width: 15%;  
+    height: 840px;
+    background-color:wheat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    opacity: 0.9;
+    margin-left: auto;
+    border: 4px solid silver;
+}
+#pokeballM1, #pokeballM2, #pokeballM3, #pokeballM4, #pokeballM5 {
+     width: 57.9%;
+     height: 165px;    
+     background-image: url(imgs/pokeball.png);
+     background-size: cover;
+     background-repeat: no-repeat;
+}
+
+
+/************************************************** Cuadros INFO Batalla **********************************************/
+
+
+#statsPlayer {
+    position: absolute;
+    top: 81%;
+    left: 52%;
+    width: 46%;
+    height: 120px;
+    border: 6px solid rgb(231, 166, 92);
+    background-color: wheat;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+}
+#statsMachine {
+    position: absolute;
+    top: 1%;
+    left: 1%;
+    width: 46%;
+    height: 120px;
+    border: 6px solid rgb(231, 166, 92);
+    background-color: wheat;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+}
+#nombrePlayer {
+    padding-top: 2px;
+    padding-left: 8px;
+    width: 190px;
+    height: 30px;
+    font-size: 20px;
+}
+#nombreMachine {
+    padding-top: 2px;
+    padding-left: 8px;
+    width: 190px;
+    height: 30px;
+    font-size: 20px;
+}
+#numeroPlayer {
+    padding-top: 2px;
+    padding-left: 8px;
+    width: 190px;
+    height: 30px;
+    font-size: 20px;   
+}
+#numeroMachine {
+    padding-top: 2px;
+    padding-left: 8px;
+    width: 190px;
+    height: 30px;
+    font-size: 20px;   
+}
+#vidaPlayer {
+    padding-top: 2px;
+    padding-left: 8px;
+    width: 200px;
+    height: 30px;
+    font-size: 20px;
+}
+#vidaMachine {
+    padding-top: 2px;
+    padding-left: 8px;
+    width: 200px;
+    height: 30px;
+    font-size: 20px;
+}
+#medidorPlayer {
+    margin-top: 4px;
+    margin-left: 5px;
+    width: 94%;
+    height: 30px;
+    border: 6px solid silver;
+    background-color: grey;
+    border-radius: 5px;
+}
+#medidorMachine {
+    margin-top: 4px;
+    margin-left: 5px;
+    width: 94%;
+    height: 30px;
+    border: 6px solid silver;
+    background-color: grey;
+    border-radius: 5px;
+}
+#vidaRestanteMachine {    
+    height: 30px;
+    
+}
+#vidaRestantePlayer {    
+    height: 30px;
+    
+}
+
+/*************************************************** Cuadro texto *************************************************/
+
+#anuncios {
+    position: absolute;
+    top: 86%;
+    left: 16%;
+    width: 66%;
+    height: 100px;
+    border: 6px solid rgb(231, 166, 92);
+    background-color: wheat;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 30px;
+    padding-left: 20px;
+}
