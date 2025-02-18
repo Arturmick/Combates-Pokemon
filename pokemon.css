@@ -21,7 +21,38 @@ img {
     background-size: cover;
     overflow: hidden;
 }
-
+/******************************cartel fight***********************************/
+#cartelFight {
+    position: absolute;
+    top: 0;
+    left: 30%;
+    width: 45%;
+    height: 90vh; /* Adjust height to cover the viewport */
+    background-image: url(imgs/cartelLucha.png);
+    background-size:contain;
+    background-repeat: no-repeat;
+    z-index: 9999; /* Ensure it appears in front of all other elements */
+    cursor: pointer;
+}
+#cartelFight:hover {
+    filter: drop-shadow(0px 0 15px rgb(255, 255, 255));
+}
+.muerto {
+    filter:saturate(0%) drop-shadow(0px 0 30px rgb(0, 0, 0));
+}
+.muriendo {
+    animation: slideDownDisappear 1s forwards;
+}
+@keyframes slideDownDisappear {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
 /**************************************************** Sprites *****************************************************/
 
 #jugadaMachine {
@@ -59,12 +90,26 @@ img {
 .ataque {
     animation: bounce 1s infinite alternate, diagonalMove 0.5s 0.5s;
 }
+.ataqueEnemigo {
+    animation: bounce 1s infinite alternate, diagonalMoveReverse 0.5s 0.5s;
+}
 @keyframes diagonalMove {
     0% {
         transform: translate(0, 0);
     }
     50% {
         transform: translate(100px, -100px);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
+@keyframes diagonalMoveReverse {
+    0% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(-100px, 100px);
     }
     100% {
         transform: translate(0, 0);
@@ -86,7 +131,9 @@ img {
         opacity: 0;
     }
 }
-
+#tableroPlayer img:hover {
+    filter: drop-shadow(0px 0 15px rgb(255, 0, 0));
+}
 /****************************************** Equipo Pokémon ******************************************/
 
 #tableroPlayer { 
@@ -122,11 +169,12 @@ img {
     border: 4px solid silver;
 }
 #pokeballM1, #pokeballM2, #pokeballM3, #pokeballM4, #pokeballM5 {
-     width: 57.9%;
+     width: 41%;
      height: 165px;    
      background-image: url(imgs/pokeball.png);
-     background-size: cover;
+     background-size: contain;
      background-repeat: no-repeat;
+     margin-top: 20px;
 }
 
 

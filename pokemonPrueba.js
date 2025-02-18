@@ -12,7 +12,6 @@ let pokemonActualPlayer = 0;
 let pokemonActualMachine = 0;
 
 document.addEventListener('DOMContentLoaded', async () => {  
-
     await numeroAleatorio();
     
     statsJugador[0] = await buscarApi(numerosAleatorios[0]);
@@ -30,78 +29,196 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.table(statsMachine);
     console.table(statsJugador);
 
+    cargarCartelFight();
+    cargarEventos(); // Ensure cargarEventos is called
+
     setearStats();    
     dibujarSprites();
     dibujarNumeros();
-    pelear();
-
+    dibujarVida();
 });
+function cargarCartelFight() {
+    document.getElementById("cartelFight").style.display = "block";
+}
+function cargarEventos() {
+    document.getElementById("cartelFight").addEventListener("click", () => {
+        document.getElementById("cartelFight").remove();
+        pelear();
+    });
+    document.getElementById("pokeball1").addEventListener("click", () => {
+        pokemonActualPlayer = 0;
+        setearStats();    
+        dibujarSprites();
+        dibujarNumeros();
+        dibujarVida();
+    });
+    document.getElementById("pokeball2").addEventListener("click", () => {
+        pokemonActualPlayer = 1;
+        setearStats();    
+        dibujarSprites();
+        dibujarNumeros();
+        dibujarVida();
+    });
+    document.getElementById("pokeball3").addEventListener("click", () => {
+        pokemonActualPlayer = 2;
+        setearStats();    
+        dibujarSprites();
+        dibujarNumeros();
+        dibujarVida();
+    });
+    document.getElementById("pokeball4").addEventListener("click", () => {
+        pokemonActualPlayer = 3;
+        setearStats();    
+        dibujarSprites();
+        dibujarNumeros();
+        dibujarVida();
+    });
+    document.getElementById("pokeball5").addEventListener("click", () => {
+        pokemonActualPlayer = 4;
+        setearStats();    
+        dibujarSprites();
+        dibujarNumeros();
+        dibujarVida();
+    });
+}
 function setearStats(){
-    vidaRestantePlayer = statsJugador[0][4];
-    vidaRestanteMachine = statsMachine[0][4];
+    vidaRestantePlayer = statsJugador[pokemonActualPlayer][4];
+    vidaRestanteMachine = statsMachine[pokemonActualMachine][4];
 }
 async function pelear() {   
-
     let ataquePlayer = ataqueMasAlto(statsJugador[pokemonActualPlayer]);
     let ataqueMachine = ataqueMasAlto(statsMachine[pokemonActualMachine]);
 
-    let defensaPlayer = elegirDefensa(ataqueMachine,statsMachine[pokemonActualMachine]);
-    let defensaMachine = elegirDefensa(ataquePlayer,statsJugador[pokemonActualPlayer]);
+    let defensaPlayer = elegirDefensa(ataqueMachine, statsMachine[pokemonActualMachine],statsJugador[pokemonActualPlayer]);
+    let defensaMachine = elegirDefensa(ataquePlayer, statsJugador[pokemonActualPlayer], statsMachine[pokemonActualMachine]);
 
-    let vidaPlayer = statsJugador[pokemonActualPlayer][4];
-    let vidaMachine = statsMachine[pokemonActualMachine][4];
-
-    await esperarEntreAnimaciones();
+    vidaRestantePlayer = statsJugador[pokemonActualPlayer][4];
+    vidaRestanteMachine = statsMachine[pokemonActualMachine][4];
     
-    if(statsJugador[pokemonActualPlayer][9] > statsMachine[pokemonActualMachine][9]) {
+    console.log("entra en pelea");
 
-        while (vidaRestantePlayer > 0 || vidaRestanteMachine > 0) {
-
-            await ataque(ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine,vidaPlayer,vidaMachine);
-
-        }
-        
-    }
+    while (vidaRestantePlayer > 0 && vidaRestanteMachine > 0) {
+        await realizarAtaque(ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
+    } 
+    console.log("sale de pelea");
 }
-function ataque(ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine,vidaPlayer,vidaMachine) {
-    vidaMachine -= (ataquePlayer - defensaMachine);
-    vidaPlayer -= (ataqueMachine - defensaPlayer);
+async function realizarAtaque(ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine) {
 
-    if(vidaRestantePlayer <= 0) {
+    if (statsJugador[pokemonActualPlayer][9] > statsMachine[pokemonActualMachine][9]) {
+
+        vidaRestanteMachine -= ((ataquePlayer - defensaMachine) > 0 ? (ataquePlayer - defensaMachine) : 0);
+
+        await realizarAtaquePlayer();  
+        dibujarVida();
+        comprobarVida();
+        dibujarNumeros();
+
+        if (vidaRestanteMachine <= 0) {
+            pokeballM1.classList.add("muerto");
+            document.getElementById("jugadaMachine").classList.add("muriendo");
+            return; // Exit if machine's life is 0
+        } 
+
+        vidaRestantePlayer -= ((ataqueMachine - defensaPlayer) > 0 ? (ataqueMachine - defensaPlayer) : 0);
+
+        await realizarAtaqueMachine();  
+        dibujarVida();
+        comprobarVida();
+        dibujarNumeros();
+
+        if (vidaRestantePlayer <= 0) {
+            pokeball1.classList.add("muerto");
+            document.getElementById("jugadaPlayer").classList.add("muriendo");
+            return; // Exit if machine's life is 0
+        }
+    } else {
+        vidaRestantePlayer -= ((ataqueMachine - defensaPlayer) > 0 ? (ataqueMachine - defensaPlayer) : 0);
+
+        await realizarAtaqueMachine();
+        dibujarVida();
+        comprobarVida();
+        dibujarNumeros();
+
+        if (vidaRestantePlayer <= 0) {
+            pokeball1.classList.add("muerto");
+            document.getElementById("jugadaPlayer").classList.add("muriendo");
+            return; // Exit if machine's life is 0
+        }
+
+        vidaRestanteMachine -= ((ataquePlayer - defensaMachine) > 0 ? (ataquePlayer - defensaMachine) : 0);
+
+        await realizarAtaquePlayer();
+        dibujarVida();
+        comprobarVida();
+        dibujarNumeros();
+
+        if (vidaRestanteMachine <= 0) {
+            pokeballM1.classList.add("muerto");
+            document.getElementById("jugadaMachine").classList.add("muriendo");
+            return; // Exit if machine's life is 0
+        } 
+
+    }
+    await esperarEntreAnimaciones(); // Ensure animations wait correctly
+}
+function comprobarVida() {
+    if (vidaRestantePlayer <= 0) {
         vidaRestantePlayer = 0;
     }
-    if(vidaRestanteMachine <= 0) {
+    if (vidaRestanteMachine <= 0) {
         vidaRestanteMachine = 0;
     }
+}
+async function realizarAtaquePlayer() {
 
-    dibujarVida();
-    dibujarNumeros();
+    document.getElementById("jugadaPlayer").classList.add("ataque");
+
+    await esperarEntreAnimaciones(1000);
+    document.getElementById("jugadaPlayer").classList.remove("ataque");
+
+    document.getElementById("jugadaMachine").classList.add("golpe");
+
+    await esperarEntreAnimaciones(2000);
+    document.getElementById("jugadaMachine").classList.remove("golpe");
+}
+async function realizarAtaqueMachine() {
+    document.getElementById("jugadaMachine").classList.add("ataqueEnemigo");
+
+    await esperarEntreAnimaciones(1000);
+    document.getElementById("jugadaMachine").classList.remove("ataqueEnemigo");
+
+    document.getElementById("jugadaPlayer").classList.add("golpe");
+
+    await esperarEntreAnimaciones(2000);
+    document.getElementById("jugadaPlayer").classList.remove("golpe");
+}
+async function esperarEntreAnimaciones(tiempo) {
+    return new Promise(resolve => setTimeout(resolve, tiempo)); // Correctly use setTimeout
 }
 
-async function esperarEntreAnimaciones() {
-    
-    setTimeout(2000);
-}
 function ataqueMasAlto(stats) {
     let ataque = "";
+  
     stats[5] > stats[7] ?  ataque = stats[5] : ataque = stats[7];
+
     return ataque;
 }
-function elegirDefensa(ataque, stats) {
+function elegirDefensa(ataque, statsAtaque, statsDefensa) {
 
-    let defensa="";
+    let defensa="";   
 
-    if(stats[5] == ataque) {
-        defensa = stats[6];
+    if(statsAtaque[5] == ataque) {
+        defensa = statsDefensa[6];
     }else {
-        defensa = stats[8];
+        defensa = statsDefensa[8];
     }
+    
     return defensa;
 }
 function dibujarVida() {
 
-    let porcentajePlayer = (vidaRestantePlayer / statsJugador[0][4]) * 100;
-    let porcentajeMachine = (vidaRestanteMachine / statsMachine[0][4]) * 100;
+    let porcentajePlayer = (vidaRestantePlayer / statsJugador[pokemonActualPlayer][4]) * 100;
+    let porcentajeMachine = (vidaRestanteMachine / statsMachine[pokemonActualMachine][4]) * 100;
 
     if(porcentajeMachine < 20) {
         document.getElementById("vidaRestanteMachine").style.backgroundColor = "red";
@@ -121,20 +238,25 @@ function dibujarVida() {
 
     if(porcentajePlayer <= 0) {
         document.getElementById("vidaRestantePlayer").style.width = "0%";
-        document.getElementById("vidaRestanteMachine").style.width = "0%";
+        
     }else {
         document.getElementById("vidaRestantePlayer").style.width = porcentajePlayer + "%";
-    document.getElementById("vidaRestanteMachine").style.width = porcentajeMachine + "%";
+    }
+
+    if(porcentajeMachine <= 0) {
+        document.getElementById("vidaRestanteMachine").style.width = "0%";
+    }else {
+        document.getElementById("vidaRestanteMachine").style.width = porcentajeMachine + "%";
     }
     
 
 }
 function dibujarNumeros() {
-    nombrePlayer.innerHTML = `${statsJugador[0][3]}`;    
-    vidaPlayer.innerHTML = `${vidaRestantePlayer}/${statsJugador[0][4]}`;
+    nombrePlayer.innerHTML = `${statsJugador[pokemonActualPlayer][3]}`;    
+    vidaPlayer.innerHTML = `${vidaRestantePlayer}/${statsJugador[pokemonActualPlayer][4]}`;
 
-    nombreMachine.innerHTML = `${statsMachine[0][3]}`;    
-    vidaMachine.innerHTML = `${vidaRestanteMachine}/${statsMachine[0][4]}`;
+    nombreMachine.innerHTML = `${statsMachine[pokemonActualMachine][3]}`;    
+    vidaMachine.innerHTML = `${vidaRestanteMachine}/${statsMachine[pokemonActualMachine][4]}`;
 }
 async function numeroAleatorio() {
     let num = 1;
@@ -148,6 +270,7 @@ async function numeroAleatorio() {
         }
         numerosAleatorios[i] = num;
     }
+    num = 133;
     console.log(numerosAleatorios);    
 }
 function dibujarSprites() {
@@ -178,6 +301,7 @@ function dibujarSprites() {
 async function buscarApi(num) {
 
     let pokemonArray = [];
+
     let url = `https://pokeapi.co/api/v2/pokemon/${num}/`;
 
     await fetch(url)
