@@ -6,10 +6,16 @@ let num = 1;
 let statsJugador = [];
 let statsMachine = [];
 let numerosAleatorios = [];
-let vidaRestantePlayer = 0;
-let vidaRestanteMachine = 0;
+let vidaMaximaPlayer = [];
+let vidaMaximaMachine = [];
 let pokemonActualPlayer = 0;
 let pokemonActualMachine = 0;
+let ataquePlayer = 0;
+let ataqueMachine = 0;
+let defensaPlayer = 0;
+let defensaMachine = 0;
+let porcentajeMachine = 0;
+let porcentajePlayer = 0;
 
 document.addEventListener('DOMContentLoaded', async () => {  
     await numeroAleatorio();
@@ -19,12 +25,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     statsJugador[2] = await buscarApi(numerosAleatorios[2]);
     statsJugador[3] = await buscarApi(numerosAleatorios[3]);
     statsJugador[4] = await buscarApi(numerosAleatorios[4]);
+    vidaMaximaPlayer[0] = statsJugador[0][4];
+    vidaMaximaPlayer[1] = statsJugador[1][4];
+    vidaMaximaPlayer[2] = statsJugador[2][4];
+    vidaMaximaPlayer[3] = statsJugador[3][4];
+    vidaMaximaPlayer[4] = statsJugador[4][4];
 
     statsMachine[0] = await buscarApi(numerosAleatorios[5]);
     statsMachine[1] = await buscarApi(numerosAleatorios[6]);
     statsMachine[2] = await buscarApi(numerosAleatorios[7]);
     statsMachine[3] = await buscarApi(numerosAleatorios[8]);
     statsMachine[4] = await buscarApi(numerosAleatorios[9]);
+    vidaMaximaMachine[0] = statsMachine[0][4];
+    vidaMaximaMachine[1] = statsMachine[1][4];
+    vidaMaximaMachine[2] = statsMachine[2][4];
+    vidaMaximaMachine[3] = statsMachine[3][4];
+    vidaMaximaMachine[4] = statsMachine[4][4];
     
     console.table(statsMachine);
     console.table(statsJugador);
@@ -43,116 +59,110 @@ function cargarCartelFight() {
 function cargarEventos() {
     document.getElementById("cartelFight").addEventListener("click", () => {
         document.getElementById("cartelFight").remove();
+        decidirAtaquesDefensas();
         pelear();
     });
     document.getElementById("pokeball1").addEventListener("click", () => {
         pokemonActualPlayer = 0;
-        setearStats();    
-        dibujarSprites();
-        dibujarNumeros();
-        dibujarVida();
+        cambiarPokemon();        
     });
     document.getElementById("pokeball2").addEventListener("click", () => {
         pokemonActualPlayer = 1;
-        setearStats();    
-        dibujarSprites();
-        dibujarNumeros();
-        dibujarVida();
+        cambiarPokemon();
     });
     document.getElementById("pokeball3").addEventListener("click", () => {
         pokemonActualPlayer = 2;
-        setearStats();    
-        dibujarSprites();
-        dibujarNumeros();
-        dibujarVida();
+        cambiarPokemon();        
     });
     document.getElementById("pokeball4").addEventListener("click", () => {
         pokemonActualPlayer = 3;
-        setearStats();    
-        dibujarSprites();
-        dibujarNumeros();
-        dibujarVida();
+        cambiarPokemon();        
     });
     document.getElementById("pokeball5").addEventListener("click", () => {
         pokemonActualPlayer = 4;
-        setearStats();    
-        dibujarSprites();
-        dibujarNumeros();
-        dibujarVida();
+        cambiarPokemon();        
     });
 }
+
+
 function setearStats(){
-    vidaRestantePlayer = statsJugador[pokemonActualPlayer][4];
-    vidaRestanteMachine = statsMachine[pokemonActualMachine][4];
+    vidaMaximaPlayer = statsJugador[pokemonActualPlayer][4];
+    vidaMaximaMachine = statsMachine[pokemonActualMachine][4];
 }
-async function pelear() {   
-    let ataquePlayer = ataqueMasAlto(statsJugador[pokemonActualPlayer]);
-    let ataqueMachine = ataqueMasAlto(statsMachine[pokemonActualMachine]);
 
-    let defensaPlayer = elegirDefensa(ataqueMachine, statsMachine[pokemonActualMachine],statsJugador[pokemonActualPlayer]);
-    let defensaMachine = elegirDefensa(ataquePlayer, statsJugador[pokemonActualPlayer], statsMachine[pokemonActualMachine]);
 
-    vidaRestantePlayer = statsJugador[pokemonActualPlayer][4];
-    vidaRestanteMachine = statsMachine[pokemonActualMachine][4];
-    
+async function decidirAtaquesDefensas() {
+
+    ataquePlayer = ataqueMasAlto(statsJugador[pokemonActualPlayer]);
+    ataqueMachine = ataqueMasAlto(statsMachine[pokemonActualMachine]);
+
+    defensaPlayer = elegirDefensa(ataqueMachine, statsMachine[pokemonActualMachine],statsJugador[pokemonActualPlayer]);
+    defensaMachine = elegirDefensa(ataquePlayer, statsJugador[pokemonActualPlayer], statsMachine[pokemonActualMachine]);
+
+}
+
+
+async function pelear() {    
     console.log("entra en pelea");
 
-    while (vidaRestantePlayer > 0 && vidaRestanteMachine > 0) {
+    while (statsJugador[pokemonActualPlayer][4] > 0 && statsMachine[pokemonActualMachine][4] > 0) {
         await realizarAtaque(ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
     } 
     console.log("sale de pelea");
 }
+
+
 async function realizarAtaque(ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine) {
 
     if (statsJugador[pokemonActualPlayer][9] > statsMachine[pokemonActualMachine][9]) {
 
-        vidaRestanteMachine -= ((ataquePlayer - defensaMachine) > 0 ? (ataquePlayer - defensaMachine) : 0);
+        statsMachine[pokemonActualMachine][4] -= ((ataquePlayer - defensaMachine) > 0 ? (ataquePlayer - defensaMachine) : 0);
 
         await realizarAtaquePlayer();  
         dibujarVida();
         comprobarVida();
         dibujarNumeros();
 
-        if (vidaRestanteMachine <= 0) {
+        if (statsMachine[pokemonActualMachine][4] <= 0) {
             pokeballM1.classList.add("muerto");
             document.getElementById("jugadaMachine").classList.add("muriendo");
             return; // Exit if machine's life is 0
         } 
 
-        vidaRestantePlayer -= ((ataqueMachine - defensaPlayer) > 0 ? (ataqueMachine - defensaPlayer) : 0);
+        statsJugador[pokemonActualPlayer][4] -= ((ataqueMachine - defensaPlayer) > 0 ? (ataqueMachine - defensaPlayer) : 0);
 
         await realizarAtaqueMachine();  
         dibujarVida();
         comprobarVida();
         dibujarNumeros();
 
-        if (vidaRestantePlayer <= 0) {
+        if (statsJugador[pokemonActualPlayer][4] <= 0) {
             pokeball1.classList.add("muerto");
             document.getElementById("jugadaPlayer").classList.add("muriendo");
             return; // Exit if machine's life is 0
         }
     } else {
-        vidaRestantePlayer -= ((ataqueMachine - defensaPlayer) > 0 ? (ataqueMachine - defensaPlayer) : 0);
+        statsJugador[pokemonActualPlayer][4] -= ((ataqueMachine - defensaPlayer) > 0 ? (ataqueMachine - defensaPlayer) : 0);
 
         await realizarAtaqueMachine();
         dibujarVida();
         comprobarVida();
         dibujarNumeros();
 
-        if (vidaRestantePlayer <= 0) {
+        if (statsJugador[pokemonActualPlayer][4] <= 0) {
             pokeball1.classList.add("muerto");
             document.getElementById("jugadaPlayer").classList.add("muriendo");
             return; // Exit if machine's life is 0
         }
 
-        vidaRestanteMachine -= ((ataquePlayer - defensaMachine) > 0 ? (ataquePlayer - defensaMachine) : 0);
+        statsMachine[pokemonActualMachine][4] -= ((ataquePlayer - defensaMachine) > 0 ? (ataquePlayer - defensaMachine) : 0);
 
         await realizarAtaquePlayer();
         dibujarVida();
         comprobarVida();
         dibujarNumeros();
 
-        if (vidaRestanteMachine <= 0) {
+        if (statsMachine[pokemonActualMachine][4] <= 0) {
             pokeballM1.classList.add("muerto");
             document.getElementById("jugadaMachine").classList.add("muriendo");
             return; // Exit if machine's life is 0
@@ -162,11 +172,11 @@ async function realizarAtaque(ataquePlayer, ataqueMachine, defensaPlayer, defens
     await esperarEntreAnimaciones(); // Ensure animations wait correctly
 }
 function comprobarVida() {
-    if (vidaRestantePlayer <= 0) {
-        vidaRestantePlayer = 0;
+    if (statsJugador[pokemonActualPlayer][4] <= 0) {
+        statsJugador[pokemonActualPlayer][4] = 0;
     }
-    if (vidaRestanteMachine <= 0) {
-        vidaRestanteMachine = 0;
+    if (statsMachine[pokemonActualMachine][4] <= 0) {
+        statsMachine[pokemonActualMachine][4] = 0;
     }
 }
 async function realizarAtaquePlayer() {
@@ -217,8 +227,8 @@ function elegirDefensa(ataque, statsAtaque, statsDefensa) {
 }
 function dibujarVida() {
 
-    let porcentajePlayer = (vidaRestantePlayer / statsJugador[pokemonActualPlayer][4]) * 100;
-    let porcentajeMachine = (vidaRestanteMachine / statsMachine[pokemonActualMachine][4]) * 100;
+    porcentajePlayer = (statsJugador[pokemonActualPlayer][4] / vidaMaximaPlayer[pokemonActualPlayer]) * 100;
+    porcentajeMachine = (statsMachine[pokemonActualMachine][4] / vidaMaximaMachine[pokemonActualMachine]) * 100;
 
     if(porcentajeMachine < 20) {
         document.getElementById("vidaRestanteMachine").style.backgroundColor = "red";
@@ -253,10 +263,10 @@ function dibujarVida() {
 }
 function dibujarNumeros() {
     nombrePlayer.innerHTML = `${statsJugador[pokemonActualPlayer][3]}`;    
-    vidaPlayer.innerHTML = `${vidaRestantePlayer}/${statsJugador[pokemonActualPlayer][4]}`;
+    vidaPlayer.innerHTML = `${statsJugador[pokemonActualPlayer][4]}/${vidaMaximaPlayer[pokemonActualPlayer]}`;
 
     nombreMachine.innerHTML = `${statsMachine[pokemonActualMachine][3]}`;    
-    vidaMachine.innerHTML = `${vidaRestanteMachine}/${statsMachine[pokemonActualMachine][4]}`;
+    vidaMachine.innerHTML = `${statsMachine[pokemonActualMachine][4]}/${vidaMaximaMachine[pokemonActualMachine]}`;
 }
 async function numeroAleatorio() {
     let num = 1;
@@ -335,4 +345,22 @@ async function buscarApi(num) {
 
     });
     return pokemonArray;
+}
+function cambiarPokemon() {
+
+    if (event.target.id === "pokeball2") {
+        pokemonActualPlayer = 1;
+    }else if (event.target.id === "pokeball3") {
+        pokemonActualPlayer = 2;
+    }else if (event.target.id === "pokeball4") {
+        pokemonActualPlayer = 3;
+    }else if (event.target.id === "pokeball5") {
+        pokemonActualPlayer = 4;
+    }else if(event.target.id === "pokeball1") {
+        pokemonActualPlayer = 0;
+    }
+    setearStats();    
+    dibujarSprites();
+    dibujarNumeros();
+    dibujarVida();
 }
