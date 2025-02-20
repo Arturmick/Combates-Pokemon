@@ -11,15 +11,16 @@ img {
     display:flex;
 }
 #tablero {
-    position: absolute;
-    
-    left: 16%;
-    width: 67.5%;
-    height: 770px;
-    border: 2px solid silver; 
+    position: relative; /* Change to relative for better positioning */
+    width: 100%; /* Use full width */
+    max-width: 1200px; /* Set a max-width */
+    height: 0;
+    padding-bottom: 40%; /* Adjust this value based on the aspect ratio of your background image */
+    border: 2px solid silver;
     background-image: url(imgs/fondoBatalla.jpg);
     background-size: cover;
     overflow: hidden;
+    margin: 0 auto; /* Center the element */
 }
 /******************************cartel fight***********************************/
 #cartelFight {
@@ -313,9 +314,10 @@ img {
         background-size: contain;
     }
     #tablero {
-        height: 550px;
-        top: 15%;
-        background-size: contain;
+        width: 100%; /* Use full width */
+        max-width: 900px; /* Set a max-width */
+        padding-bottom: 40%;
+        margin-top: 10%;       
         background-repeat: no-repeat;
     }
     #statsPlayer {
@@ -343,13 +345,12 @@ img {
     body {
         background-size: contain;
     }
-    #tablero {
-        height: 276px;
-        width: 63%;
-        top: 1%;
-        left: 18%;
-        
-        background-repeat: no-repeat;
+    #tablero {      
+        width: 63%; 
+        max-width: 900px; /* Set a max-width */
+        padding-bottom: 40%;
+        margin-top: 0%;
+      
     }
     #jugadaMachine {
         top: 6%;
