@@ -313,14 +313,14 @@ img {
         background-size: contain;
     }
     #tablero {
-        height: 540px;
+        
         top: 15%;
         left: 16.15%;
-        background-size: contain;
+        
         background-repeat: no-repeat;
     }
     #statsPlayer {
-        top: 37%;
+        top: 74%;
         
     }
     #jugadaMachine {
