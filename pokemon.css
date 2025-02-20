@@ -12,10 +12,10 @@ img {
 }
 #tablero {
     position: absolute;
-    
     left: 16%;
     width: 67.5%;
-    height: 770px;
+    height: 0;
+    padding-bottom: 40%; /* Adjust this value based on the aspect ratio of your background image */
     border: 2px solid silver; 
     background-image: url(imgs/fondoBatalla.jpg);
     background-size: cover;
@@ -320,7 +320,7 @@ img {
         background-repeat: no-repeat;
     }
     #statsPlayer {
-        top: 75%;
+        top: 37%;
         
     }
     #jugadaMachine {
