@@ -12,10 +12,10 @@ img {
 }
 #tablero {
     position: absolute;
+    
     left: 16%;
     width: 67.5%;
-    height: 0;
-    padding-bottom: 40%; /* Adjust this value based on the aspect ratio of your background image */
+    height: 770px;
     border: 2px solid silver; 
     background-image: url(imgs/fondoBatalla.jpg);
     background-size: cover;
@@ -313,14 +313,13 @@ img {
         background-size: contain;
     }
     #tablero {
-        
+        height: 550px;
         top: 15%;
-        left: 16.15%;
-        
+        background-size: contain;
         background-repeat: no-repeat;
     }
     #statsPlayer {
-        top: 74%;
+        top: 75%;
         
     }
     #jugadaMachine {
@@ -335,22 +334,21 @@ img {
         height: 500px;
     }
     #anuncios {
-        top: 80%;
-        left: 16.3%;
+        top: 75%;
         width: 65%;        
         font-size: 35px;
     }
 }
-@media (max-width: 900px) {
+@media (max-width: 800px) {
     body {
         background-size: contain;
     }
     #tablero {
-        height: 319px;
+        height: 276px;
         width: 63%;
         top: 1%;
         left: 18%;
-        background-size: contain;
+        
         background-repeat: no-repeat;
     }
     #jugadaMachine {
@@ -369,18 +367,18 @@ img {
         top: 84%;
         width: 60%;
         left: 18%;
-        height: 50px;        
+        height: 40px;        
         font-size: 20px;
     }
     #tableroPlayer {
         margin-top: 5px;
         width: 15%;
-        height: 360px;
+        height: 305px;
     }
     #tableroMachine {
         margin-top: 5px;
         width: 15%;
-        height: 360px;
+        height: 305px;
     }
     #pokeball1, #pokeball2, #pokeball3, #pokeball4, #pokeball5 {
         width: 55%;
@@ -394,7 +392,7 @@ img {
         top: 1%;
         left: 1%;
         width: 46%;
-        height: 90px;
+        height: 50px;
     }
     #statsMachine * {
         font-size: 20px;
@@ -403,10 +401,11 @@ img {
         font-size: 20px;
     }
     #statsPlayer {
-        top: 67%;
-        height: 90px;
+        top: 77%;
+        height: 50px;
     }
     #medidorPlayer, #medidorMachine, #vidaRestanteMachine, #vidaRestantePlayer {
-        height: 20px;
+        margin-top: -15px;
+        height: 10px;
     }
 }
