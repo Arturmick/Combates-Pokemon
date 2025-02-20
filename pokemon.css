@@ -294,6 +294,20 @@ img {
     padding-left: 20px;
 }
 
+#startButtonContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
+#startButton {
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
 @media (max-width: 1400px) {
     body {
         background-size: contain;

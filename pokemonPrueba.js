@@ -70,6 +70,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.table(statsMachine);
     console.table(statsJugador);
 
+    await pulsarBotonParaEmpezar();
+
     musica("start");
     dibujarPokemon();
     mostrarMensaje("¡El entrenador Gary te desafía!");
@@ -89,6 +91,17 @@ function musica(tipo) {
     } else if (tipo === "stop" && backgroundMusic) {
         backgroundMusic.pause();        
     }
+}
+async function pulsarBotonParaEmpezar() {
+    const startButtonContainer = document.getElementById('startButtonContainer');
+    const startButton = document.getElementById('startButton');
+
+    return new Promise(resolve => {
+        startButton.addEventListener('click', () => {
+            startButtonContainer.style.display = 'none';
+            resolve();
+        });
+    });
 }
 async function mostrarMensaje(mensaje) {
     anuncios.innerHTML = mensaje;    
@@ -476,6 +489,7 @@ async function cambiarPokemon() {
     await esperarEntreAnimaciones(1000);
     peleaParada = false;
     turnoEnemigo = true; // Asegurarse de que el turno comience correctamente
+    await esperarEntreAnimaciones(1000); // Add a delay before starting the fight
     pelear();
     agregarEventosPokeballs(); // Asegurarse de que los eventos estén cargados
 }
@@ -499,6 +513,7 @@ async function cambiarPokemonEnemigo() {
 
     if(!primerPokemonEnemigo) {
         turnoEnemigo = false; // Asegurarse de que el turno comience correctamente
+        await esperarEntreAnimaciones(1000); // Add a delay before starting the fight
         pelear();
     }else {
         anuncios.innerHTML = "Elige tu primer Pokémon";
