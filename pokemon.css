@@ -313,8 +313,9 @@ img {
         background-size: contain;
     }
     #tablero {
-        height: 550px;
+        height: 540px;
         top: 15%;
+        left: 16.15%;
         background-size: contain;
         background-repeat: no-repeat;
     }
@@ -334,7 +335,8 @@ img {
         height: 500px;
     }
     #anuncios {
-        top: 75%;
+        top: 80%;
+        left: 16.3%;
         width: 65%;        
         font-size: 35px;
     }
