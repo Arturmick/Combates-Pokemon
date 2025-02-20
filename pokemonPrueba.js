@@ -16,6 +16,31 @@ let defensaPlayer = 0;
 let defensaMachine = 0;
 let porcentajeMachine = 0;
 let porcentajePlayer = 0;
+let peleaParada = true; 
+let turnoEnemigo = true;
+let primerPokemonEnemigo = true;
+let backgroundMusic; // Variable para almacenar la referencia al objeto de audio de la música de fondo
+
+const tablaDeTipos = {
+    fire: { strongAgainst: ['grass', 'bug', 'ice', 'steel'], weakAgainst: ['water', 'rock', 'fire', 'dragon'] },
+    water: { strongAgainst: ['fire', 'ground', 'rock'], weakAgainst: ['water', 'grass', 'dragon'] },
+    grass: { strongAgainst: ['water', 'ground', 'rock'], weakAgainst: ['fire', 'grass', 'poison', 'flying', 'bug', 'dragon', 'steel'] },
+    electric: { strongAgainst: ['water', 'flying'], weakAgainst: ['electric', 'ground', 'grass', 'dragon'] },
+    ice: { strongAgainst: ['grass', 'ground', 'flying', 'dragon'], weakAgainst: ['fire', 'water', 'ice', 'steel'] },
+    fighting: { strongAgainst: ['normal', 'ice', 'rock', 'dark', 'steel'], weakAgainst: ['poison', 'flying', 'psychic', 'bug', 'fairy'] },
+    poison: { strongAgainst: ['grass', 'fairy'], weakAgainst: ['poison', 'ground', 'rock', 'ghost'] },
+    ground: { strongAgainst: ['fire', 'electric', 'poison', 'rock', 'steel'], weakAgainst: ['grass', 'ice', 'water'] },
+    flying: { strongAgainst: ['grass', 'fighting', 'bug'], weakAgainst: ['electric', 'rock', 'steel'] },
+    psychic: { strongAgainst: ['fighting', 'poison'], weakAgainst: ['psychic', 'steel'] },
+    bug: { strongAgainst: ['grass', 'psychic', 'dark'], weakAgainst: ['fire', 'fighting', 'poison', 'flying', 'ghost', 'steel', 'fairy'] },
+    rock: { strongAgainst: ['fire', 'ice', 'flying', 'bug'], weakAgainst: ['water', 'grass', 'fighting', 'ground', 'steel'] },
+    ghost: { strongAgainst: ['psychic', 'ghost'], weakAgainst: ['dark'] },
+    dragon: { strongAgainst: ['dragon'], weakAgainst: ['steel', 'fairy'] },
+    dark: { strongAgainst: ['psychic', 'ghost'], weakAgainst: ['fighting', 'dark', 'fairy'] },
+    steel: { strongAgainst: ['ice', 'rock', 'fairy'], weakAgainst: ['fire', 'water', 'electric', 'steel'] },
+    fairy: { strongAgainst: ['fighting', 'dragon', 'dark'], weakAgainst: ['poison', 'steel', 'fire'] },
+    normal: { strongAgainst: [], weakAgainst: ['fighting'] }
+};
 
 document.addEventListener('DOMContentLoaded', async () => {  
     await numeroAleatorio();
@@ -45,52 +70,61 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.table(statsMachine);
     console.table(statsJugador);
 
-    cargarCartelFight();
-    cargarEventos(); // Ensure cargarEventos is called
+    musica("start");
+    dibujarPokemon();
+    mostrarMensaje("¡El entrenador Gary te desafía!");
+    await esperarEntreAnimaciones(3000);
+    mostrarMensaje("¡Prepárate para la batalla!");
+    await esperarEntreAnimaciones(3000);
 
-    setearStats();    
-    dibujarSprites();
-    dibujarNumeros();
-    dibujarVida();
+    cambiarPokemonEnemigo();
 });
-function cargarCartelFight() {
-    document.getElementById("cartelFight").style.display = "block";
+function musica(tipo) {
+    let sonido = "./audio/10. Battle! (Trainer Battle).mp3";
+    if (tipo === "start") {
+        backgroundMusic = new Audio(sonido);
+        backgroundMusic.loop = true; // Reproduce en bucle
+        backgroundMusic.volume = 0.8;
+        backgroundMusic.play();
+    } else if (tipo === "stop" && backgroundMusic) {
+        backgroundMusic.pause();        
+    }
 }
-function cargarEventos() {
-    document.getElementById("cartelFight").addEventListener("click", () => {
-        document.getElementById("cartelFight").remove();
-        decidirAtaquesDefensas();
-        pelear();
-    });
-    document.getElementById("pokeball1").addEventListener("click", () => {
-        pokemonActualPlayer = 0;
-        cambiarPokemon();        
+async function mostrarMensaje(mensaje) {
+    anuncios.innerHTML = mensaje;    
+}
+function agregarEventosPokeballs() {
+    document.getElementById("pokeball1").addEventListener("click", () => {        
+        if(!document.getElementById("pokeball1").classList.contains("muerto") || peleaParada) {
+            pokemonActualPlayer = 0;
+            cambiarPokemon();
+        }    
     });
     document.getElementById("pokeball2").addEventListener("click", () => {
-        pokemonActualPlayer = 1;
-        cambiarPokemon();
+        if(!document.getElementById("pokeball2").classList.contains("muerto") || peleaParada) {
+            pokemonActualPlayer = 1;
+            cambiarPokemon();
+        }
     });
     document.getElementById("pokeball3").addEventListener("click", () => {
-        pokemonActualPlayer = 2;
-        cambiarPokemon();        
+        if(!document.getElementById("pokeball3").classList.contains("muerto") || peleaParada) {
+            pokemonActualPlayer = 2;
+            cambiarPokemon(); 
+        }  
     });
     document.getElementById("pokeball4").addEventListener("click", () => {
-        pokemonActualPlayer = 3;
-        cambiarPokemon();        
+        if(!document.getElementById("pokeball4").classList.contains("muerto") || peleaParada) {
+            pokemonActualPlayer = 3;
+            cambiarPokemon();  
+        }   
     });
     document.getElementById("pokeball5").addEventListener("click", () => {
-        pokemonActualPlayer = 4;
-        cambiarPokemon();        
+        if(!document.getElementById("pokeball5").classList.contains("muerto") || peleaParada) {
+            pokemonActualPlayer = 4;
+            cambiarPokemon(); 
+        }       
     });
 }
-
-
-function setearStats(){
-    vidaMaximaPlayer = statsJugador[pokemonActualPlayer][4];
-    vidaMaximaMachine = statsMachine[pokemonActualMachine][4];
-}
-
-
 async function decidirAtaquesDefensas() {
 
     ataquePlayer = ataqueMasAlto(statsJugador[pokemonActualPlayer]);
@@ -103,74 +137,122 @@ async function decidirAtaquesDefensas() {
 
 
 async function pelear() {    
-    console.log("entra en pelea");
+    peleaParada = false; // Resetear la variable al iniciar la pelea
+    let decidirVelocidad = true;
+  
+    while (statsJugador[pokemonActualPlayer][4] > 0 && statsMachine[pokemonActualMachine][4] > 0 && !peleaParada) {
 
-    while (statsJugador[pokemonActualPlayer][4] > 0 && statsMachine[pokemonActualMachine][4] > 0) {
-        await realizarAtaque(ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
+        if(((statsJugador[pokemonActualPlayer][9] < statsMachine[pokemonActualMachine][9])) && decidirVelocidad) {
+            turnoEnemigo = true;
+            decidirVelocidad = false;
+        }
+        if (turnoEnemigo) {
+            turnoEnemigo = false;
+            await realizarAtaque("enemigo",ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
+            
+        }else {
+            turnoEnemigo = true;
+            await realizarAtaque("jugador",ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
+            
+        }
     } 
-    console.log("sale de pelea");
 }
 
+async function realizarAtaque(turno ,ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine) {
+    mostrarMensaje("");
 
-async function realizarAtaque(ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine) {
+    if (turno === "jugador") {
+        let tiposAtacante = statsJugador[pokemonActualPlayer][11]; 
+        let tiposDefensor = statsMachine[pokemonActualMachine][11];
+        let modificador = calcularModificadorTipo(tiposAtacante, tiposDefensor);
 
-    if (statsJugador[pokemonActualPlayer][9] > statsMachine[pokemonActualMachine][9]) {
+        statsMachine[pokemonActualMachine][4] -= ((ataquePlayer * modificador - defensaMachine) > 0 ? (ataquePlayer * modificador - defensaMachine) : 10);
 
-        statsMachine[pokemonActualMachine][4] -= ((ataquePlayer - defensaMachine) > 0 ? (ataquePlayer - defensaMachine) : 0);
+        if(modificador > 1) {
+            mostrarMensaje("¡Es supereficaz!");
+        } else if(modificador < 1) {
+            mostrarMensaje("¡No es muy eficaz!");
+        }
 
-        await realizarAtaquePlayer();  
-        dibujarVida();
+        await realizarAtaquePlayer(); 
+         
+        dibujarVidaPokemonCambiado("enemigo");
         comprobarVida();
-        dibujarNumeros();
+        dibujarNumeros("enemigo");
 
         if (statsMachine[pokemonActualMachine][4] <= 0) {
-            pokeballM1.classList.add("muerto");
+            peleaParada = true;
+            reproducirSonidoPokemon(pokemonActualMachine,"enemigo");
+            detectarPokemonMuerto("enemigo");  
             document.getElementById("jugadaMachine").classList.add("muriendo");
-            return; // Exit if machine's life is 0
+            await esperarEntreAnimaciones(1000);
+             
+            if(!comprobarVictoria()) {
+                mostrarMensaje(`${statsMachine[pokemonActualMachine][3]} se ha debilitado!`);
+            } 
+            await esperarEntreAnimaciones(2000);
+            cambiarPokemonEnemigo();
         } 
+    } else {
+        let tiposAtacante = statsMachine[pokemonActualMachine][11];
+        let tiposDefensor = statsJugador[pokemonActualPlayer][11];
+        let modificador = calcularModificadorTipo(tiposAtacante, tiposDefensor);
 
-        statsJugador[pokemonActualPlayer][4] -= ((ataqueMachine - defensaPlayer) > 0 ? (ataqueMachine - defensaPlayer) : 0);
+        statsJugador[pokemonActualPlayer][4] -= ((ataqueMachine * modificador - defensaPlayer) > 0 ? (ataqueMachine * modificador - defensaPlayer) : 10);
+
+        if(modificador > 1) {
+            mostrarMensaje("¡Es supereficaz!");
+        } else if(modificador < 1) {
+            mostrarMensaje("¡No es muy eficaz!");
+        }
 
         await realizarAtaqueMachine();  
-        dibujarVida();
+        
+        dibujarVidaPokemonCambiado();
         comprobarVida();
         dibujarNumeros();
 
         if (statsJugador[pokemonActualPlayer][4] <= 0) {
-            pokeball1.classList.add("muerto");
+            peleaParada = true;
+            reproducirSonidoPokemon(pokemonActualPlayer,"jugador");
+            detectarPokemonMuerto("jugador");  
             document.getElementById("jugadaPlayer").classList.add("muriendo");
-            return; // Exit if machine's life is 0
+            if(!comprobarVictoria("enemigo")) {
+                mostrarMensaje(`${statsJugador[pokemonActualPlayer][3]} se ha debilitado!`);
+                await esperarEntreAnimaciones(2000);
+                mostrarMensaje("¡Elige otro Pokémon!");
+            }
         }
-    } else {
-        statsJugador[pokemonActualPlayer][4] -= ((ataqueMachine - defensaPlayer) > 0 ? (ataqueMachine - defensaPlayer) : 0);
-
-        await realizarAtaqueMachine();
-        dibujarVida();
-        comprobarVida();
-        dibujarNumeros();
-
-        if (statsJugador[pokemonActualPlayer][4] <= 0) {
-            pokeball1.classList.add("muerto");
-            document.getElementById("jugadaPlayer").classList.add("muriendo");
-            return; // Exit if machine's life is 0
-        }
-
-        statsMachine[pokemonActualMachine][4] -= ((ataquePlayer - defensaMachine) > 0 ? (ataquePlayer - defensaMachine) : 0);
-
-        await realizarAtaquePlayer();
-        dibujarVida();
-        comprobarVida();
-        dibujarNumeros();
-
-        if (statsMachine[pokemonActualMachine][4] <= 0) {
-            pokeballM1.classList.add("muerto");
-            document.getElementById("jugadaMachine").classList.add("muriendo");
-            return; // Exit if machine's life is 0
-        } 
-
-    }
-    await esperarEntreAnimaciones(); // Ensure animations wait correctly
+    }  
+    await esperarEntreAnimaciones(500); 
 }
+
+function detectarPokemonMuerto(enemigo) {
+
+    if(enemigo === "enemigo" && pokemonActualMachine === 0){
+        pokeballM1.classList.add("muerto");
+    }else if(enemigo === "enemigo" && pokemonActualMachine === 1) {
+        pokeballM2.classList.add("muerto");
+    }else if(enemigo === "enemigo" && pokemonActualMachine === 2) {
+        pokeballM3.classList.add("muerto");
+    }else if(enemigo === "enemigo" && pokemonActualMachine === 3) {
+        pokeballM4.classList.add("muerto");
+    }else if(enemigo === "enemigo" && pokemonActualMachine === 4) {
+        pokeballM5.classList.add("muerto");
+    }else if(enemigo === "jugador" && pokemonActualPlayer === 0) {
+        pokeball1.classList.add("muerto");
+    }else if(enemigo === "jugador" && pokemonActualPlayer === 1) {
+        pokeball2.classList.add("muerto");
+    }else if(enemigo === "jugador" && pokemonActualPlayer === 2) {
+        pokeball3.classList.add("muerto");
+    }else if(enemigo === "jugador" && pokemonActualPlayer === 3) {
+        pokeball4.classList.add("muerto");
+    }else if(enemigo === "jugador" && pokemonActualPlayer === 4) {
+        pokeball5.classList.add("muerto");
+    }
+}
+
+
 function comprobarVida() {
     if (statsJugador[pokemonActualPlayer][4] <= 0) {
         statsJugador[pokemonActualPlayer][4] = 0;
@@ -187,6 +269,7 @@ async function realizarAtaquePlayer() {
     document.getElementById("jugadaPlayer").classList.remove("ataque");
 
     document.getElementById("jugadaMachine").classList.add("golpe");
+    reproducirSonido("ataque");
 
     await esperarEntreAnimaciones(2000);
     document.getElementById("jugadaMachine").classList.remove("golpe");
@@ -198,6 +281,7 @@ async function realizarAtaqueMachine() {
     document.getElementById("jugadaMachine").classList.remove("ataqueEnemigo");
 
     document.getElementById("jugadaPlayer").classList.add("golpe");
+    reproducirSonido("ataque");
 
     await esperarEntreAnimaciones(2000);
     document.getElementById("jugadaPlayer").classList.remove("golpe");
@@ -225,48 +309,59 @@ function elegirDefensa(ataque, statsAtaque, statsDefensa) {
     
     return defensa;
 }
-function dibujarVida() {
+function dibujarVidaPokemonCambiado(enemigo) {
 
-    porcentajePlayer = (statsJugador[pokemonActualPlayer][4] / vidaMaximaPlayer[pokemonActualPlayer]) * 100;
-    porcentajeMachine = (statsMachine[pokemonActualMachine][4] / vidaMaximaMachine[pokemonActualMachine]) * 100;
+    if(enemigo === "enemigo") {
+        porcentajeMachine = (statsMachine[pokemonActualMachine][4] / vidaMaximaMachine[pokemonActualMachine]) * 100;
 
-    if(porcentajeMachine < 20) {
-        document.getElementById("vidaRestanteMachine").style.backgroundColor = "red";
-    }else if(porcentajeMachine < 40) {
-        document.getElementById("vidaRestanteMachine").style.backgroundColor = "yellow";
+        if(porcentajeMachine < 20) {
+            document.getElementById("vidaRestanteMachine").style.backgroundColor = "red";
+        }else if(porcentajeMachine < 40) {
+            document.getElementById("vidaRestanteMachine").style.backgroundColor = "yellow";
+        }else {
+            document.getElementById("vidaRestanteMachine").style.backgroundColor = "green";
+        }
+
+        if(porcentajeMachine <= 0) {
+            document.getElementById("vidaRestanteMachine").style.width = "0%";
+        }else {
+            document.getElementById("vidaRestanteMachine").style.width = porcentajeMachine + "%";
+        }
     }else {
-        document.getElementById("vidaRestanteMachine").style.backgroundColor = "green";
-    }
-
-    if(porcentajePlayer < 20) {
-        document.getElementById("vidaRestantePlayer").style.backgroundColor = "red";
-    }else if(porcentajePlayer < 40) {
-        document.getElementById("vidaRestantePlayer").style.backgroundColor = "yellow";
-    }else {
-        document.getElementById("vidaRestantePlayer").style.backgroundColor = "green";
-    }
-
-    if(porcentajePlayer <= 0) {
-        document.getElementById("vidaRestantePlayer").style.width = "0%";
+        porcentajePlayer = (statsJugador[pokemonActualPlayer][4] / vidaMaximaPlayer[pokemonActualPlayer]) * 100;
         
-    }else {
-        document.getElementById("vidaRestantePlayer").style.width = porcentajePlayer + "%";
-    }
-
-    if(porcentajeMachine <= 0) {
-        document.getElementById("vidaRestanteMachine").style.width = "0%";
-    }else {
-        document.getElementById("vidaRestanteMachine").style.width = porcentajeMachine + "%";
-    }
+        if(porcentajePlayer < 20) {
+            document.getElementById("vidaRestantePlayer").style.backgroundColor = "red";
+        }else if(porcentajePlayer < 40) {
+            document.getElementById("vidaRestantePlayer").style.backgroundColor = "yellow";
+        }else {
+            document.getElementById("vidaRestantePlayer").style.backgroundColor = "green";
+        }
     
-
+        if(porcentajePlayer <= 0) {
+            document.getElementById("vidaRestantePlayer").style.width = "0%";
+            
+        }else {
+            document.getElementById("vidaRestantePlayer").style.width = porcentajePlayer + "%";
+        }
+    }    
 }
-function dibujarNumeros() {
-    nombrePlayer.innerHTML = `${statsJugador[pokemonActualPlayer][3]}`;    
-    vidaPlayer.innerHTML = `${statsJugador[pokemonActualPlayer][4]}/${vidaMaximaPlayer[pokemonActualPlayer]}`;
+function dibujarNumeros(enemigo) {
 
-    nombreMachine.innerHTML = `${statsMachine[pokemonActualMachine][3]}`;    
-    vidaMachine.innerHTML = `${statsMachine[pokemonActualMachine][4]}/${vidaMaximaMachine[pokemonActualMachine]}`;
+    if(enemigo === "enemigo") {
+        nombreMachine.innerHTML = `${statsMachine[pokemonActualMachine][3]}`;    
+        vidaMachine.innerHTML = `${statsMachine[pokemonActualMachine][4]}/${vidaMaximaMachine[pokemonActualMachine]}`;
+    }else {
+        nombrePlayer.innerHTML = `${statsJugador[pokemonActualPlayer][3]}`;    
+        vidaPlayer.innerHTML = `${statsJugador[pokemonActualPlayer][4]}/${vidaMaximaPlayer[pokemonActualPlayer]}`;
+    }    
+}
+function quitarClasesMuerto(enemigo) {
+    if(enemigo === "enemigo") {
+        document.getElementById("jugadaMachine").classList.remove("muriendo");
+    }else {
+        document.getElementById("jugadaPlayer").classList.remove("muriendo");
+    }
 }
 async function numeroAleatorio() {
     let num = 1;
@@ -283,8 +378,8 @@ async function numeroAleatorio() {
     num = 133;
     console.log(numerosAleatorios);    
 }
-function dibujarSprites() {
-    
+function dibujarPokemon() {
+        
     pokemon1.innerHTML = `
         <img src="${statsJugador[0][0]}" alt="${statsJugador[0][2]}">
         `;
@@ -300,16 +395,20 @@ function dibujarSprites() {
     pokemon5.innerHTML = `
         <img src="${statsJugador[4][0]}" alt="${statsJugador[0][2]}">
         `;
+}
+function dibujarSprites(enemigo) {
 
-    jugadaMachine.innerHTML = `
-    <img src="${statsMachine[pokemonActualMachine][0]}" alt="${statsMachine[pokemonActualMachine][2]}">
-    `;
-    jugadaPlayer.innerHTML = `
-    <img src="${statsJugador[pokemonActualPlayer][1]}" alt="${statsJugador[pokemonActualPlayer][2]}">
-    `;
+    if(enemigo === "enemigo") {
+        jugadaMachine.innerHTML = `
+        <img src="${statsMachine[pokemonActualMachine][0]}" alt="${statsMachine[pokemonActualMachine][2]}">
+        `;
+    }else {
+        jugadaPlayer.innerHTML = `
+        <img src="${statsJugador[pokemonActualPlayer][1]}" alt="${statsJugador[pokemonActualPlayer][2]}">
+        `;
+    }
 }
 async function buscarApi(num) {
-
     let pokemonArray = [];
 
     let url = `https://pokeapi.co/api/v2/pokemon/${num}/`;
@@ -317,6 +416,7 @@ async function buscarApi(num) {
     await fetch(url)
         .then(respuesta => respuesta.json())
         .then(datos => {
+        console.log(datos);
 
         let nombre = datos.name.charAt(0).toUpperCase() + datos.name.slice(1);
         let numero = datos.id;
@@ -328,6 +428,8 @@ async function buscarApi(num) {
         let ataqueEspecial = datos.stats['3'].base_stat;
         let defensaEspecial = datos.stats['4'].base_stat;
         let velocidad = datos.stats['5'].base_stat;
+        let sonido = datos.cries.latest;
+        let tipos = datos.types.map(typeInfo => typeInfo.type.name);
 
         pokemonArray[0] = imagen;
         pokemonArray[1] = imagenDetras;        
@@ -339,14 +441,16 @@ async function buscarApi(num) {
         pokemonArray[7] = ataqueEspecial;
         pokemonArray[8] = defensaEspecial;
         pokemonArray[9] = velocidad;
+        pokemonArray[10] = sonido;
+        pokemonArray[11] = tipos;
         
         console.log(pokemonArray);
         console.log(datos);
-
     });
     return pokemonArray;
 }
-function cambiarPokemon() {
+
+async function cambiarPokemon() {
 
     if (event.target.id === "pokeball2") {
         pokemonActualPlayer = 1;
@@ -358,9 +462,112 @@ function cambiarPokemon() {
         pokemonActualPlayer = 4;
     }else if(event.target.id === "pokeball1") {
         pokemonActualPlayer = 0;
-    }
-    setearStats();    
+    }  
+    mostrarMensaje(`¡${statsJugador[pokemonActualPlayer][3]}! ¡Te elijo!`);
+    quitarClasesMuerto();   
     dibujarSprites();
     dibujarNumeros();
-    dibujarVida();
+    dibujarVidaPokemonCambiado();
+    decidirAtaquesDefensas();
+    await esperarEntreAnimaciones(1000);
+
+    reproducirSonidoPokemon(pokemonActualPlayer,"player");
+
+    await esperarEntreAnimaciones(1000);
+    peleaParada = false;
+    turnoEnemigo = true; // Asegurarse de que el turno comience correctamente
+    pelear();
+    agregarEventosPokeballs(); // Asegurarse de que los eventos estén cargados
+}
+async function cambiarPokemonEnemigo() {
+   
+    if(!primerPokemonEnemigo) {
+        pokemonActualMachine++;  
+        mostrarMensaje(`¡El entrenador Gary cambia a ${statsMachine[pokemonActualMachine][3]}!`);               
+    }    else {
+        mostrarMensaje(`¡El entrenador Gary elige a ${statsMachine[pokemonActualMachine][3]}!`);        
+    }
+    
+    await esperarEntreAnimaciones(2000);
+    quitarClasesMuerto("enemigo"); 
+    dibujarSprites("enemigo");
+    dibujarNumeros("enemigo");
+    dibujarVidaPokemonCambiado("enemigo");
+    decidirAtaquesDefensas();
+    await esperarEntreAnimaciones(1000);
+    reproducirSonidoPokemon(pokemonActualMachine,"enemigo");
+
+    if(!primerPokemonEnemigo) {
+        turnoEnemigo = false; // Asegurarse de que el turno comience correctamente
+        pelear();
+    }else {
+        anuncios.innerHTML = "Elige tu primer Pokémon";
+        agregarEventosPokeballs();
+    }
+    
+    primerPokemonEnemigo = false;
+}
+function reproducirSonidoPokemon(pokemon, turno) {
+
+    let sonido = statsJugador[pokemon][10];
+
+    if(turno === "enemigo") {
+        sonido = statsMachine[pokemon][10];
+    }
+    let audio = new Audio(sonido);
+    audio.play();
+}
+function reproducirSonido(tipo){
+    let sonido = "";
+
+    if(tipo === "ataque") {
+        sonido = "./audio/ataque.mp3";
+    }else if(tipo === "victoria") {
+        sonido = "./audio/victoria.mp3";
+        musica("stop"); // Detener la música de fondo cuando suene la música de victoria
+    }
+    
+    let audio = new Audio(sonido);
+    audio.play();
+}
+function comprobarVictoria(enemigo) {
+
+    if((enemigo === "enemigo") 
+        && pokeball1.classList.contains("muerto") 
+        && pokeball2.classList.contains("muerto") 
+        && pokeball3.classList.contains("muerto") 
+        && pokeball4.classList.contains("muerto") 
+        && pokeball5.classList.contains("muerto")) {
+
+        mostrarMensaje("¡Has perido!");
+        peleaParada = false;
+        return true;
+    }else if(pokeballM1.classList.contains("muerto") 
+        && pokeballM2.classList.contains("muerto") 
+        && pokeballM3.classList.contains("muerto") 
+        && pokeballM4.classList.contains("muerto") 
+        && pokeballM5.classList.contains("muerto")) {  
+
+        musica("stop");
+        reproducirSonido("victoria");
+        mostrarMensaje("¡Has ganado!");
+        
+        return true;
+    }    
+    return false;
+}
+function calcularModificadorTipo(tiposAtacante, tiposDefensor) {
+    let modificador = 1;
+
+    tiposAtacante.forEach(tipoAtacante => {
+        tiposDefensor.forEach(tipoDefensor => {
+            if (tablaDeTipos[tipoAtacante].strongAgainst.includes(tipoDefensor)) {
+                modificador *= 2; // Doble daño
+            } else if (tablaDeTipos[tipoAtacante].weakAgainst.includes(tipoDefensor)) {
+                modificador *= 0.5; // Mitad de daño
+            }
+        });
+    });
+
+    return modificador;
 }
