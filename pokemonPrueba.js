@@ -217,7 +217,7 @@ async function realizarAtaque(turno ,ataquePlayer, ataqueMachine, defensaPlayer,
             await esperarEntreAnimaciones(1000);
              
             if(!comprobarVictoria()) {
-                mostrarMensaje(`${statsMachine[pokemonActualMachine][3]} se ha debilitado!`);
+                mostrarMensaje(`¡${statsMachine[pokemonActualMachine][3]} se ha debilitado!`);
             } 
             await esperarEntreAnimaciones(2000);
             cambiarPokemonEnemigo();
@@ -247,7 +247,7 @@ async function realizarAtaque(turno ,ataquePlayer, ataqueMachine, defensaPlayer,
             detectarPokemonMuerto("jugador");  
             document.getElementById("jugadaPlayer").classList.add("muriendo");
             if(!comprobarVictoria("enemigo")) {
-                mostrarMensaje(`${statsJugador[pokemonActualPlayer][3]} se ha debilitado!`);
+                mostrarMensaje(`¡${statsJugador[pokemonActualPlayer][3]} se ha debilitado!`);
                 await esperarEntreAnimaciones(2000);
                 mostrarMensaje("¡Elige otro Pokémon!");
             }
