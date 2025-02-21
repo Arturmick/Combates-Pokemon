@@ -1,0 +1,15 @@
+{
+  "name": "combates-pokemon",
+  "version": "1.0.0",
+  "description": "A Pokémon battle simulation game.",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=8080",
+    "build": "echo 'No build step defined'"
+  },
+  "author": "Arturo Miquel",
+  "license": "ISC",
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  }
+}
