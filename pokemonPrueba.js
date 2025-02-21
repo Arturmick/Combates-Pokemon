@@ -20,6 +20,7 @@ let peleaParada = true;
 let turnoEnemigo = true;
 let primerPokemonEnemigo = true;
 let backgroundMusic; // Variable para almacenar la referencia al objeto de audio de la música de fondo
+let eventosPokeballsAgregados = false; // Flag to check if event listeners are already added
 
 const tablaDeTipos = {
     fire: { strongAgainst: ['grass', 'bug', 'ice', 'steel'], weakAgainst: ['water', 'rock', 'fire', 'dragon'] },
@@ -107,36 +108,40 @@ async function mostrarMensaje(mensaje) {
     anuncios.innerHTML = mensaje;    
 }
 function agregarEventosPokeballs() {
+    if (eventosPokeballsAgregados) return; // Prevent adding event listeners multiple times
+
     document.getElementById("pokeball1").addEventListener("click", () => {        
-        if(!document.getElementById("pokeball1").classList.contains("muerto") || peleaParada) {
+        if(!document.getElementById("pokeball1").classList.contains("muerto") && peleaParada) {
             pokemonActualPlayer = 0;
             cambiarPokemon();
         }    
     });
     document.getElementById("pokeball2").addEventListener("click", () => {
-        if(!document.getElementById("pokeball2").classList.contains("muerto") || peleaParada) {
+        if(!document.getElementById("pokeball2").classList.contains("muerto") && peleaParada) {
             pokemonActualPlayer = 1;
             cambiarPokemon();
         }
     });
     document.getElementById("pokeball3").addEventListener("click", () => {
-        if(!document.getElementById("pokeball3").classList.contains("muerto") || peleaParada) {
+        if(!document.getElementById("pokeball3").classList.contains("muerto") && peleaParada) {
             pokemonActualPlayer = 2;
             cambiarPokemon(); 
         }  
     });
     document.getElementById("pokeball4").addEventListener("click", () => {
-        if(!document.getElementById("pokeball4").classList.contains("muerto") || peleaParada) {
+        if(!document.getElementById("pokeball4").classList.contains("muerto") && peleaParada) {
             pokemonActualPlayer = 3;
             cambiarPokemon();  
         }   
     });
     document.getElementById("pokeball5").addEventListener("click", () => {
-        if(!document.getElementById("pokeball5").classList.contains("muerto") || peleaParada) {
+        if(!document.getElementById("pokeball5").classList.contains("muerto") && peleaParada) {
             pokemonActualPlayer = 4;
             cambiarPokemon(); 
         }       
     });
+
+    eventosPokeballsAgregados = true; // Set the flag to true after adding event listeners
 }
 async function decidirAtaquesDefensas() {
 
@@ -161,10 +166,12 @@ async function pelear() {
         }
         if (turnoEnemigo) {
             turnoEnemigo = false;
+            console.log("Turno enemigo");
             await realizarAtaque("enemigo",ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
             
         }else {
             turnoEnemigo = true;
+            console.log("Turno jugador");           
             await realizarAtaque("jugador",ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
             
         }
@@ -186,8 +193,8 @@ async function realizarAtaque(turno ,ataquePlayer, ataqueMachine, defensaPlayer,
         } else if(modificador < 1) {
             mostrarMensaje("¡No es muy eficaz!");
         }
-
-        await realizarAtaquePlayer(); 
+        console.log("Ataque del jugador");
+        await spritesAtaque(); 
          
         dibujarVidaPokemonCambiado("enemigo");
         comprobarVida();
@@ -218,8 +225,8 @@ async function realizarAtaque(turno ,ataquePlayer, ataqueMachine, defensaPlayer,
         } else if(modificador < 1) {
             mostrarMensaje("¡No es muy eficaz!");
         }
-
-        await realizarAtaqueMachine();  
+        console.log("Ataque del enemigo");
+        await spritesAtaque("enemigo");  
         
         dibujarVidaPokemonCambiado();
         comprobarVida();
@@ -274,31 +281,36 @@ function comprobarVida() {
         statsMachine[pokemonActualMachine][4] = 0;
     }
 }
-async function realizarAtaquePlayer() {
+async function spritesAtaque(enemigo) {
 
-    document.getElementById("jugadaPlayer").classList.add("ataque");
+    if(enemigo === "enemigo") {
+        document.getElementById("jugadaMachine").classList.add("ataqueEnemigo");
 
-    await esperarEntreAnimaciones(1000);
-    document.getElementById("jugadaPlayer").classList.remove("ataque");
+        await esperarEntreAnimaciones(1000);
+        document.getElementById("jugadaMachine").classList.remove("ataqueEnemigo");
+    
+        document.getElementById("jugadaPlayer").classList.add("golpe");
+        reproducirSonido("ataque");
+    
+        await esperarEntreAnimaciones(2000);
+        document.getElementById("jugadaPlayer").classList.remove("golpe");
 
-    document.getElementById("jugadaMachine").classList.add("golpe");
-    reproducirSonido("ataque");
 
-    await esperarEntreAnimaciones(2000);
-    document.getElementById("jugadaMachine").classList.remove("golpe");
+    }else {
+        document.getElementById("jugadaPlayer").classList.add("ataque");
+
+        await esperarEntreAnimaciones(1000);
+        document.getElementById("jugadaPlayer").classList.remove("ataque");
+    
+        document.getElementById("jugadaMachine").classList.add("golpe");
+        reproducirSonido("ataque");
+    
+        await esperarEntreAnimaciones(2000);
+        document.getElementById("jugadaMachine").classList.remove("golpe");
+    }
+    
 }
-async function realizarAtaqueMachine() {
-    document.getElementById("jugadaMachine").classList.add("ataqueEnemigo");
 
-    await esperarEntreAnimaciones(1000);
-    document.getElementById("jugadaMachine").classList.remove("ataqueEnemigo");
-
-    document.getElementById("jugadaPlayer").classList.add("golpe");
-    reproducirSonido("ataque");
-
-    await esperarEntreAnimaciones(2000);
-    document.getElementById("jugadaPlayer").classList.remove("golpe");
-}
 async function esperarEntreAnimaciones(tiempo) {
     return new Promise(resolve => setTimeout(resolve, tiempo)); // Correctly use setTimeout
 }
@@ -484,14 +496,13 @@ async function cambiarPokemon() {
     decidirAtaquesDefensas();
     await esperarEntreAnimaciones(1000);
 
-    reproducirSonidoPokemon(pokemonActualPlayer,"player");
-
-    await esperarEntreAnimaciones(1000);
+    reproducirSonidoPokemon(pokemonActualPlayer,"player");   
+    await esperarEntreAnimaciones(1000); 
     peleaParada = false;
-    turnoEnemigo = true; // Asegurarse de que el turno comience correctamente
-    await esperarEntreAnimaciones(1000); // Add a delay before starting the fight
+    turnoEnemigo = true;
+    console.log("pelea jugador");
     pelear();
-    agregarEventosPokeballs(); // Asegurarse de que los eventos estén cargados
+    agregarEventosPokeballs();
 }
 async function cambiarPokemonEnemigo() {
    
@@ -512,8 +523,9 @@ async function cambiarPokemonEnemigo() {
     reproducirSonidoPokemon(pokemonActualMachine,"enemigo");
 
     if(!primerPokemonEnemigo) {
-        turnoEnemigo = false; // Asegurarse de que el turno comience correctamente
-        await esperarEntreAnimaciones(1000); // Add a delay before starting the fight
+        turnoEnemigo = false; 
+        await esperarEntreAnimaciones(1000); 
+        console.log("pelea machine");
         pelear();
     }else {
         anuncios.innerHTML = "Elige tu primer Pokémon";
