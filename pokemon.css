@@ -13,7 +13,7 @@ img {
 #tablero {
     position: relative; /* Change to relative for better positioning */
     width: 100%; /* Use full width */
-    max-width: 1200px; /* Set a max-width */
+    max-width: 1300px; /* Set a max-width */
     height: 0;
     padding-bottom: 40%; /* Adjust this value based on the aspect ratio of your background image */
     border: 2px solid silver;
@@ -62,7 +62,7 @@ img {
     left: 64%;
     width: 25%;
     height: 300px;
-    
+    z-index: 1; /* Ensure this element is behind statsPlayer */
 }
 #jugadaMachine img {
     object-fit: contain;
@@ -194,6 +194,7 @@ img {
     border-radius: 5px;
     display: flex;
     flex-wrap: wrap;
+    z-index: 2; /* Ensure this element is in front of jugadaMachine */
 }
 #statsMachine {
     position: absolute;
@@ -408,5 +409,83 @@ img {
     #medidorPlayer, #medidorMachine, #vidaRestanteMachine, #vidaRestantePlayer {
         margin-top: -15px;
         height: 10px;
+    }
+}
+@media (max-width: 750px) {
+    body {
+        background-size: contain;
+    }
+    #tablero {      
+        width: 63%; 
+        max-width: 900px; /* Set a max-width */
+        padding-bottom: 40%;
+        margin-top: 0%;
+      
+    }
+    #jugadaMachine {
+        top: 6%;
+        left: 65%;
+        width: auto;
+        height: 130px;
+    }
+    #jugadaPlayer {
+        top: 20%;        
+        width: auto;
+        left: -15%;
+        height: 400px;
+    }
+    #anuncios {
+        top: 86%;
+        width: 60%;
+        left: 18%;
+        height: 30px;        
+        font-size: 20px;
+    }
+    #tableroPlayer {
+        margin-top: 5px;
+        width: 15%;
+        height: 305px;
+    }
+    #tableroMachine {
+        margin-top: 5px;
+        width: 15%;
+        height: 305px;
+    }
+    #pokeball1, #pokeball2, #pokeball3, #pokeball4, #pokeball5 {
+        width: 55%;
+        height: auto;      
+    }
+    #pokeballM1, #pokeballM2, #pokeballM3, #pokeballM4, #pokeballM5 {
+        width: 45%;
+        margin-top: 5px;     
+    }
+    #statsMachine {
+        top: 1%;
+        left: 1%;
+        width: 40%;
+        height: 60px;
+    }
+    #statsMachine * {
+        font-size: 20px;
+    }
+    #statsPlayer * {
+        font-size: 20px;
+    }
+    #statsPlayer {
+        top: 73%;
+        width: 40%;
+        left: 56%;
+        height: 60px;
+    }
+    #medidorPlayer, #medidorMachine {
+        margin-top: -12px;
+        height: 10px;
+        
+    }
+    #vidaRestanteMachine, #vidaRestantePlayer{
+        margin-top: 0px;
+    }
+    #nombrePlayer, #nombreMachine, #numeroPlayer, #numeroMachine, #vidaPlayer, #vidaMachine {
+        font-size: 15px;
     }
 }

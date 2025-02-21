@@ -19,8 +19,10 @@ let porcentajePlayer = 0;
 let peleaParada = true; 
 let turnoEnemigo = true;
 let primerPokemonEnemigo = true;
-let backgroundMusic; // Variable para almacenar la referencia al objeto de audio de la música de fondo
+//let backgroundMusic; // Variable para almacenar la referencia al objeto de audio de la música de fondo
 let eventosPokeballsAgregados = false; // Flag to check if event listeners are already added
+let audio = new Audio();
+let backgroundMusic = new Audio();
 
 const tablaDeTipos = {
     fire: { strongAgainst: ['grass', 'bug', 'ice', 'steel'], weakAgainst: ['water', 'rock', 'fire', 'dragon'] },
@@ -71,6 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.table(statsMachine);
     console.table(statsJugador);
 
+    
+
     await pulsarBotonParaEmpezar();
 
     musica("start");
@@ -85,7 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function musica(tipo) {
     let sonido = "./audio/10. Battle! (Trainer Battle).mp3";
     if (tipo === "start") {
-        backgroundMusic = new Audio(sonido);
+        backgroundMusic.src = sonido; // Establecer la ruta del archivo de audio de la música de fondo
         backgroundMusic.loop = true; // Reproduce en bucle
         backgroundMusic.volume = 0.8;
         backgroundMusic.play();
@@ -94,8 +98,13 @@ function musica(tipo) {
     }
 }
 async function pulsarBotonParaEmpezar() {
-    const startButtonContainer = document.getElementById('startButtonContainer');
-    const startButton = document.getElementById('startButton');
+    // Create and insert the start button container
+    const startButtonContainer = document.createElement('div');
+    startButtonContainer.id = 'startButtonContainer';
+    startButtonContainer.innerHTML = '<button id="startButton">Start Game</button>';
+    document.body.appendChild(startButtonContainer);
+    
+    const startButton = document.getElementById('startButton');    
 
     return new Promise(resolve => {
         startButton.addEventListener('click', () => {
@@ -541,7 +550,7 @@ function reproducirSonidoPokemon(pokemon, turno) {
     if(turno === "enemigo") {
         sonido = statsMachine[pokemon][10];
     }
-    let audio = new Audio(sonido);
+    audio.src = sonido;    
     audio.play();
 }
 function reproducirSonido(tipo){
@@ -553,8 +562,7 @@ function reproducirSonido(tipo){
         sonido = "./audio/victoria.mp3";
         musica("stop"); // Detener la música de fondo cuando suene la música de victoria
     }
-    
-    let audio = new Audio(sonido);
+    audio.src = sonido;
     audio.play();
 }
 function comprobarVictoria(enemigo) {
