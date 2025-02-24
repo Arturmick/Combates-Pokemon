@@ -298,7 +298,7 @@ button {
     object-fit: contain;
     width: 100%;
     height: 100%;
-    animation: bounce 0.6s infinite alternate;
+    animation: bounce 0.5s infinite alternate;
 }
 
 #jugadaPlayer {
@@ -312,17 +312,17 @@ button {
 #jugadaPlayer img {
     width: 100%;
     height: 100%;
-    animation: bounce 1s infinite alternate;
+    animation: bounce 0.5s infinite alternate;
 }
 
 .golpe {
-    animation: bounce 0.6s infinite alternate, blink 0.5s infinite;
+    animation: bounce 0.5s infinite alternate, blink 0.5s infinite;
 }
 .ataque {
-    animation: bounce 1s infinite alternate, diagonalMove 0.5s 0.5s;
+    animation: bounce 0.5s infinite alternate, diagonalMove 0.5s 0.5s;
 }
 .ataqueEnemigo {
-    animation: bounce 1s infinite alternate, diagonalMoveReverse 0.5s 0.5s;
+    animation: bounce 0.5s infinite alternate, diagonalMoveReverse 0.5s 0.5s;
 }
 @keyframes diagonalMove {
     0% {
