@@ -105,7 +105,7 @@ function musica(tipo) {
     if (tipo === "start") {
         backgroundMusic.src = sonido; // Establecer la ruta del archivo de audio de la música de fondo
         backgroundMusic.loop = true; // Reproduce en bucle
-        backgroundMusic.volume = 0.8;
+        backgroundMusic.volume = 0.5;
         backgroundMusic.play();
     } else if (tipo === "stop" && backgroundMusic) {
         backgroundMusic.pause();        
