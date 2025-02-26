@@ -28,24 +28,24 @@ let intentos = 8;
 let pokemons = [];
 
 const tablaDeTipos = {
-    fire: { strongAgainst: ['grass', 'bug', 'ice', 'steel'], weakAgainst: ['water', 'rock', 'fire', 'dragon'] },
-    water: { strongAgainst: ['fire', 'ground', 'rock'], weakAgainst: ['water', 'grass', 'dragon'] },
-    grass: { strongAgainst: ['water', 'ground', 'rock'], weakAgainst: ['fire', 'grass', 'poison', 'flying', 'bug', 'dragon', 'steel'] },
-    electric: { strongAgainst: ['water', 'flying'], weakAgainst: ['electric', 'ground', 'grass', 'dragon'] },
-    ice: { strongAgainst: ['grass', 'ground', 'flying', 'dragon'], weakAgainst: ['fire', 'water', 'ice', 'steel'] },
-    fighting: { strongAgainst: ['normal', 'ice', 'rock', 'dark', 'steel'], weakAgainst: ['poison', 'flying', 'psychic', 'bug', 'fairy'] },
-    poison: { strongAgainst: ['grass', 'fairy'], weakAgainst: ['poison', 'ground', 'rock', 'ghost'] },
-    ground: { strongAgainst: ['fire', 'electric', 'poison', 'rock', 'steel'], weakAgainst: ['grass', 'ice', 'water'] },
-    flying: { strongAgainst: ['grass', 'fighting', 'bug'], weakAgainst: ['electric', 'rock', 'steel'] },
-    psychic: { strongAgainst: ['fighting', 'poison'], weakAgainst: ['psychic', 'steel'] },
-    bug: { strongAgainst: ['grass', 'psychic', 'dark'], weakAgainst: ['fire', 'fighting', 'poison', 'flying', 'ghost', 'steel', 'fairy'] },
-    rock: { strongAgainst: ['fire', 'ice', 'flying', 'bug'], weakAgainst: ['water', 'grass', 'fighting', 'ground', 'steel'] },
-    ghost: { strongAgainst: ['psychic', 'ghost'], weakAgainst: ['dark'] },
-    dragon: { strongAgainst: ['dragon'], weakAgainst: ['steel', 'fairy'] },
-    dark: { strongAgainst: ['psychic', 'ghost'], weakAgainst: ['fighting', 'dark', 'fairy'] },
-    steel: { strongAgainst: ['ice', 'rock', 'fairy'], weakAgainst: ['fire', 'water', 'electric', 'steel'] },
-    fairy: { strongAgainst: ['fighting', 'dragon', 'dark'], weakAgainst: ['poison', 'steel', 'fire'] },
-    normal: { strongAgainst: [], weakAgainst: ['fighting'] }
+    fire: {     strongAgainst: ['grass', 'bug', 'ice', 'steel'],                weakAgainst: ['water', 'rock', 'fire', 'dragon'] },
+    water: {    strongAgainst: ['fire', 'ground', 'rock'],                      weakAgainst: ['water', 'grass', 'dragon'] },
+    grass: {    strongAgainst: ['water', 'ground', 'rock'],                     weakAgainst: ['fire', 'grass', 'poison', 'flying', 'bug', 'dragon', 'steel'] },
+    electric: { strongAgainst: ['water', 'flying'],                             weakAgainst: ['electric', 'ground', 'grass', 'dragon'] },
+    ice: {      strongAgainst: ['grass', 'ground', 'flying', 'dragon'],         weakAgainst: ['fire', 'water', 'ice', 'steel'] },
+    fighting: { strongAgainst: ['normal', 'ice', 'rock', 'dark', 'steel'],      weakAgainst: ['poison', 'flying', 'psychic', 'bug', 'fairy'] },
+    poison: {   strongAgainst: ['grass', 'fairy'],                              weakAgainst: ['poison', 'ground', 'rock', 'ghost'] },
+    ground: {   strongAgainst: ['fire', 'electric', 'poison', 'rock', 'steel'], weakAgainst: ['grass', 'ice', 'water'] },
+    flying: {   strongAgainst: ['grass', 'fighting', 'bug'],                    weakAgainst: ['electric', 'rock', 'steel'] },
+    psychic: {  strongAgainst: ['fighting', 'poison'],                          weakAgainst: ['psychic', 'steel'] },
+    bug: {      strongAgainst: ['grass', 'psychic', 'dark'],                    weakAgainst: ['fire', 'fighting', 'poison', 'flying', 'ghost', 'steel', 'fairy'] },
+    rock: {     strongAgainst: ['fire', 'ice', 'flying', 'bug'],                weakAgainst: ['water', 'grass', 'fighting', 'ground', 'steel'] },
+    ghost: {    strongAgainst: ['psychic', 'ghost'],                            weakAgainst: ['dark'] },
+    dragon: {   strongAgainst: ['dragon'],                                      weakAgainst: ['steel', 'fairy'] },
+    dark: {     strongAgainst: ['psychic', 'ghost'],                            weakAgainst: ['fighting', 'dark', 'fairy'] },
+    steel: {    strongAgainst: ['ice', 'rock', 'fairy'],                        weakAgainst: ['fire', 'water', 'electric', 'steel'] },
+    fairy: {    strongAgainst: ['fighting', 'dragon', 'dark'],                  weakAgainst: ['poison', 'steel', 'fire'] },
+    normal: {   strongAgainst: [],                                              weakAgainst: ['fighting'] }
 };
 
 document.addEventListener('DOMContentLoaded', async () => {  
@@ -60,19 +60,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     */
 
-    statsMachine[0] = await buscarApi(numerosAleatorios[5]);
-    statsMachine[1] = await buscarApi(numerosAleatorios[6]);
-    statsMachine[2] = await buscarApi(numerosAleatorios[7]);
-    statsMachine[3] = await buscarApi(numerosAleatorios[8]);
-    statsMachine[4] = await buscarApi(numerosAleatorios[9]);
+    statsMachine[0] = await solicitarPokemonApi();
+    statsMachine[1] = await solicitarPokemonApi();
+    statsMachine[2] = await solicitarPokemonApi();
+    statsMachine[3] = await solicitarPokemonApi();
+    statsMachine[4] = await solicitarPokemonApi();
     vidaMaximaMachine[0] = statsMachine[0][4];
     vidaMaximaMachine[1] = statsMachine[1][4];
     vidaMaximaMachine[2] = statsMachine[2][4];
     vidaMaximaMachine[3] = statsMachine[3][4];
     vidaMaximaMachine[4] = statsMachine[4][4];
-    
-    console.table(statsMachine);
-    console.table(statsJugador);
 
     quitarPonerProtector();
     await guardarPokemons();
@@ -128,6 +125,8 @@ async function pulsarBotonParaEmpezar() {
     });
 }
 async function mostrarMensaje(mensaje) {
+    anuncios.innerHTML = "";
+    await esperarEntreAnimaciones(300);
     anuncios.innerHTML = mensaje;    
 }
 function agregarEventosPokeballs() {
@@ -188,13 +187,11 @@ async function pelear() {
             decidirVelocidad = false;
         }
         if (turnoEnemigo) {
-            turnoEnemigo = false;
-            console.log("Turno enemigo");
+            turnoEnemigo = false;            
             await realizarAtaque("enemigo",ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
             
         }else {
-            turnoEnemigo = true;
-            console.log("Turno jugador");           
+            turnoEnemigo = true;                      
             await realizarAtaque("jugador",ataquePlayer, ataqueMachine, defensaPlayer, defensaMachine);
             
         }
@@ -215,8 +212,7 @@ async function realizarAtaque(turno ,ataquePlayer, ataqueMachine, defensaPlayer,
             mostrarMensaje("¡Es supereficaz!");
         } else if(modificador < 1) {
             mostrarMensaje("¡No es muy eficaz!");
-        }
-        console.log("Ataque del jugador");
+        }        
         await spritesAtaque(); 
          
         dibujarVidaPokemonCambiado("enemigo");
@@ -247,8 +243,7 @@ async function realizarAtaque(turno ,ataquePlayer, ataqueMachine, defensaPlayer,
             mostrarMensaje("¡Es supereficaz!");
         } else if(modificador < 1) {
             mostrarMensaje("¡No es muy eficaz!");
-        }
-        console.log("Ataque del enemigo");
+        }       
         await spritesAtaque("enemigo");  
         
         dibujarVidaPokemonCambiado();
@@ -315,7 +310,7 @@ async function spritesAtaque(enemigo) {
         document.getElementById("jugadaPlayer").classList.add("golpe");
         reproducirSonido("ataque");
     
-        await esperarEntreAnimaciones(2000);
+        await esperarEntreAnimaciones(1000);
         document.getElementById("jugadaPlayer").classList.remove("golpe");
 
 
@@ -328,7 +323,7 @@ async function spritesAtaque(enemigo) {
         document.getElementById("jugadaMachine").classList.add("golpe");
         reproducirSonido("ataque");
     
-        await esperarEntreAnimaciones(2000);
+        await esperarEntreAnimaciones(1000);
         document.getElementById("jugadaMachine").classList.remove("golpe");
     }
     
@@ -462,6 +457,7 @@ function dibujarSprites(enemigo) {
         `;
     }
 }
+/*
 async function buscarApi(num) {
     let pokemonArray = [];
 
@@ -470,7 +466,7 @@ async function buscarApi(num) {
     await fetch(url)
         .then(respuesta => respuesta.json())
         .then(datos => {
-        console.log(datos);
+        
 
         let nombre = datos.name.charAt(0).toUpperCase() + datos.name.slice(1);
         let numero = datos.id;
@@ -497,13 +493,10 @@ async function buscarApi(num) {
         pokemonArray[9] = velocidad;
         pokemonArray[10] = sonido;
         pokemonArray[11] = tipos;
-        
-        console.log(pokemonArray);
-        console.log(datos);
     });
     return pokemonArray;
 }
-
+*/
 async function cambiarPokemon() {
 
     if (event.target.id === "pokeball2") {
@@ -529,7 +522,6 @@ async function cambiarPokemon() {
     await esperarEntreAnimaciones(1000); 
     peleaParada = false;
     turnoEnemigo = true;
-    console.log("pelea jugador");
     pelear();
     agregarEventosPokeballs();
 }
@@ -554,7 +546,6 @@ async function cambiarPokemonEnemigo() {
     if(!primerPokemonEnemigo) {
         turnoEnemigo = false; 
         await esperarEntreAnimaciones(1000); 
-        console.log("pelea machine");
         pelear();
     }else {
         anuncios.innerHTML = "Elige tu primer Pokémon";
@@ -714,22 +705,31 @@ function cargarEventosRuleta() {
 }
 
 async function lanzarPokemon() {
+    const elementoSeleccionado = document.querySelector('.seleccionada');
     let indiceActual = 0;
-    let intervaloTiempo = 50;
+    let intervaloTiempo = 10;
     const cambiosTotales = Math.floor(Math.random() * 9) + 12; // Entre 12 y 20 cambios        
 
     for (let i = 0; i < cambiosTotales; i++) {
         await esperarEntreAnimaciones(intervaloTiempo);
         document.querySelector('.seleccionada').classList.remove('seleccionada');
         indiceActual = (indiceActual + 1) % 8;
+
+        while (document.getElementById(`c${indiceActual + 1}`).querySelector('.esMiembro')) {
+            indiceActual = (indiceActual + 1) % 8;
+        }
+    
         document.getElementById(`c${indiceActual + 1}`).classList.add('seleccionada');
-        intervaloTiempo += 10;
+
+        
+        intervaloTiempo += 5;
     }  
     // Verifica si el Pokémon seleccionado ya ha sido seleccionado
-    const elementoSeleccionado = document.querySelector('.seleccionada');
+    /*
     if (elementoSeleccionado.querySelector('.esMiembro')) {
         await lanzarPokemon(); // Relanza automáticamente si el Pokémon ya ha sido seleccionado
     } 
+    */
 }
 
 // Comprueba que el número de intentos restantes sea mayor que el número de plazas vacías
@@ -738,6 +738,7 @@ function comprobarNumeroPlazaIntentos() {
 
     if(plazasVacias == 0){   
         activarDesactivarBotones("lanzador","desactivar");//desactiva el lanzador si no hay plazas vacías
+        
     }
     if (intentos == plazasVacias) {
         document.getElementById('contadorIntentos').classList.add('alert');
@@ -772,8 +773,10 @@ async function solicitarPokemonApi() {
             if (!response.ok) continue; // Si la respuesta no es válida, intenta otro número                                       
                                                 
             let datos = await response.json();                                     
-            found = true; // Si llega aquí, encontró un Pokémon válido                                     
-                                                                                 
+            found = true; // Si llega aquí, encontró un Pokémon válido    
+
+            console.log(datos); // Muestra los datos del Pokémon en la consola   
+
             //Descomenta esta parte para ver un arte movido (es horrible pero se mueve)                                    
             //let imagen = datos.sprites.other['showdown'].front_default;                                      
             let nombre = datos.name.charAt(0).toUpperCase() + datos.name.slice(1);
@@ -801,6 +804,9 @@ async function solicitarPokemonApi() {
             pokemonArray[9] = velocidad;
             pokemonArray[10] = sonido;
             pokemonArray[11] = tipos; 
+
+            console.log(pokemonArray);
+
         } catch (error) {
           console.error("Error en la petición:", error);
         }
